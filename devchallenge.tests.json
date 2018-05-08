@@ -1,0 +1,614 @@
+{
+	"info": {
+		"name": "devchallenge.tests",
+		"_postman_id": "7fcff1b6-9136-5485-abfd-7f00823c8281",
+		"description": "Collection to complete QA Task for Dev Challenge 12",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "PET",
+			"description": "",
+			"item": [
+				{
+					"name": "Add new Pet",
+					"description": "",
+					"item": [
+						{
+							"name": "POST new Pet",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5ba0b743-d0f1-4dd7-bf0f-aae9ffc1452b",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"var data = JSON.parse(responseBody);",
+											"",
+											"tests[\"Content-Type is application/json\"] = ",
+											"responseHeaders[\"Content-Type\"].has(\"application/json\");",
+											"",
+											"response = [",
+											"  \"id\",",
+											"  \"category\",",
+											"  \"name\",",
+											"  \"photoUrls\",",
+											"  \"tags\"",
+											"];",
+											"",
+											"for(var i in response) {",
+											"  result = responseBody.has(response[i]);",
+											"  tests[response[i] + \" is present in Response\"] = result;",
+											"}",
+											"",
+											"tests[\"Created Pet has specified ID\"] = data.id == postman.getEnvironmentVariable(\"petNewID\");",
+											"",
+											"tests[\"Created Pet has specified name\"] = data.name == postman.getEnvironmentVariable(\"petNewName\");",
+											"",
+											"// set global env  for petID",
+											"postman.setEnvironmentVariable(\"petCreatedId\", data.id);"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "39817dfb-7afb-4c72-960c-3dbe00a09c3b",
+										"type": "text/javascript",
+										"exec": [
+											"var petNewName = \"TestName\" +Date.now().toString().slice(0, -5);",
+											"var petNewID = Date.now().toString().slice(0, -5);",
+											"",
+											"postman.setEnvironmentVariable(\"petName\", petNewName);",
+											"postman.setEnvironmentVariable(\"petNewID\", petNewID);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"id\": \"{{petNewID}}\",\n  \"category\": {\n  \t\"id\": \"123654\",\n    \"name\": \"Cat\"\n  },\n  \"name\": \"{{petNewName}}\",\n  \"photoUrls\": [\"/test\"],\n  \"tags\": [\n    {\n      \"id\": 0,\n      \"name\": \"string\"\n    }\n  ],\n  \"status\": \"available\"\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/pet/",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"pet",
+										""
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "GET created Pet by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4e258262-915d-4c03-a48d-ffd96142564e",
+										"type": "text/javascript",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"tests[\"Created Pet has specified name\"] = data.name == postman.getEnvironmentVariable(\"petNewName\");",
+											"",
+											"tests[\"Id is the same as Pet createdID\"] = data.id == postman.getEnvironmentVariable(\"petCreatedId\");"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "492e1d60-4904-43f4-92fd-41faf01435ec",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{URL}}/pet/{{petCreatedId}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"pet",
+										"{{petCreatedId}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Change Pet name",
+					"description": "",
+					"item": [
+						{
+							"name": "Change created Pet name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "18bc35bb-a935-4b2e-b4c9-b68fd46dfa3f",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"var responseNotEmpty = responseBody.toString().length > 0;",
+											"",
+											"if(responseBody.toString().length > 0) {",
+											"    var data = JSON.parse(responseBody);",
+											"    ",
+											"    tests[\"Content-Type is application/json\"] = ",
+											"responseHeaders[\"Content-Type\"].has(\"application/json\");",
+											"",
+											"tests[\"Pet name was updated to new one\"] = data.name != postman.getEnvironmentVariable(\"petNewName\");",
+											"",
+											"tests[\"Pet name was updated to new one\"] = data.name == postman.getEnvironmentVariable(\"petUpdatedName\");",
+											"}",
+											""
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "98fe4649-532c-46ee-b0c4-8b0f4d705554",
+										"type": "text/javascript",
+										"exec": [
+											"var petUpdatedName = \"TestName\" +Date.now().toString().slice(0, -5);",
+											"",
+											"postman.setEnvironmentVariable(\"petUpdatedName\", petUpdatedName);"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "{{petUpdatedName}}",
+											"description": "",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "stats",
+											"description": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/pet/{{petCreatedId}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"pet",
+										"{{petCreatedId}}"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "{{petUpdatedName}}",
+											"equals": true,
+											"disabled": true
+										}
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "Check if name was updated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a60a7028-284c-4921-b89d-5254caa11658",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"if(responseBody.toString().length > 0) {",
+											"    var data = JSON.parse(responseBody);",
+											"}",
+											"",
+											"tests[\"Content-Type is application/json\"] = ",
+											"responseHeaders[\"Content-Type\"].has(\"application/json\");",
+											"",
+											"tests[\"Pet name was updated to new one\"] = data.name != postman.getEnvironmentVariable(\"petNewName\");",
+											"",
+											"tests[\"Pet name was updated to new one\"] = data.name == postman.getEnvironmentVariable(\"petUpdatedName\");"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ea49850c-1918-4738-a8b2-4b32755548e2",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "newname",
+											"description": "",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "stats",
+											"description": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/pet/{{petCreatedId}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"pet",
+										"{{petCreatedId}}"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "{{petUpdatedName}}",
+											"equals": true,
+											"disabled": true
+										}
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Delete Pet",
+					"description": "",
+					"item": [
+						{
+							"name": "Delete Pet by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e9f3ae9e-64de-442e-8532-d4854cf2047f",
+										"type": "text/javascript",
+										"exec": [
+											"tests[\"Status code is 200\"] = responseCode.code === 200;",
+											"",
+											"if(responseCode.code === 200) {",
+											"    postman.setEnvironmentVariable(\"petDeletedId\", postman.getEnvironmentVariable(\"petCreatedId\"));",
+											"}",
+											""
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "492e1d60-4904-43f4-92fd-41faf01435ec",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{URL}}/pet/{{petCreatedId}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"pet",
+										"{{petCreatedId}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "GET deleted Pet",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c98b9c43-74af-44fb-a8ac-8bbaf2f0fb60",
+										"type": "text/javascript",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"",
+											"tests[\"Status code is 404\"] = responseCode.code === 404;",
+											"",
+											"tests[\"message is Pet not found\"] = data.message == \"Pet not found\";",
+											""
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "492e1d60-4904-43f4-92fd-41faf01435ec",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{URL}}/pet/{{petDeletedId}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"pet",
+										"{{petDeletedId}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		},
+		{
+			"name": "Store",
+			"description": "",
+			"item": [
+				{
+					"name": "GET Store Inventory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d5b21f1-cf29-40d4-a5c6-6e617df6734c",
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "492e1d60-4904-43f4-92fd-41faf01435ec",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{URL}}/store/inventory",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"store",
+								"inventory"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order for Pet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8aa7159-941a-483a-9cc0-fe0d37ac1c8d",
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var data = JSON.parse(responseBody);",
+									"var contentTypeHeaderExists = responseHeaders.hasOwnProperty(\"Content-Type\");",
+									"",
+									"response = [",
+									"    \"id\",",
+									"    \"petId\",",
+									"    \"quantity\",",
+									"    \"shipDate\",",
+									"    \"status\",",
+									"    \"complete\"",
+									"    ];",
+									"",
+									"//verify if content exist",
+									"tests[\"Has Content-Type\"] = contentTypeHeaderExists;",
+									"",
+									"//if exist, verify info",
+									"if(contentTypeHeaderExists) {",
+									"  tests[\"Content-Type is application/json\"] = ",
+									"  responseHeaders[\"Content-Type\"].has(\"application/json\");",
+									"  ",
+									"  for(var i in response) {",
+									"      result = responseBody.has(response[i]);",
+									"      tests[response[i] + \" is present in Response\"] = result;",
+									"  }",
+									" }"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "492e1d60-4904-43f4-92fd-41faf01435ec",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 123,\n  \"petId\": 123,\n  \"quantity\": 1,\n  \"shipDate\": \"2019-05-08T20:03:58.527Z\",\n  \"status\": \"placed\",\n  \"complete\": false\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/store/order",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"store",
+								"order"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
